@@ -4,9 +4,9 @@
 """
 import sys
 
-from PyQt5.QtCore import QLibraryInfo, QLocale, Qt, QTimer, QTranslator
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QMessageBox, QSplashScreen
+from PyQt6.QtCore import QLibraryInfo, QLocale, Qt, QTimer, QTranslator
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QApplication, QMessageBox, QSplashScreen
 
 from app.database import Database
 from app.main_window import MainWindow
@@ -26,15 +26,15 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     # русский язык для стандартных диалогов и календаря
-    QLocale.setDefault(QLocale(QLocale.Russian, QLocale.Russia))
+    QLocale.setDefault(QLocale(QLocale.Language.Russian, QLocale.Country.Russia))
     translator = QTranslator(app)
-    if translator.load("qtbase_ru", QLibraryInfo.location(QLibraryInfo.TranslationsPath)):
+    if translator.load("qtbase_ru", QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)):
         app.installTranslator(translator)
     app.setWindowIcon(QIcon(image("logo.png")))
 
     splash = QSplashScreen(QPixmap(image("splash.png")))
     splash.show()
-    splash.showMessage("Загрузка базы данных…", Qt.AlignBottom | Qt.AlignRight, Qt.white)
+    splash.showMessage("Загрузка базы данных…", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, Qt.GlobalColor.white)
     app.processEvents()
 
     try:
@@ -49,7 +49,7 @@ def main():
 
     window = MainWindow(db)
     QTimer.singleShot(1200, lambda: (window.show(), splash.finish(window)))
-    code = app.exec_()
+    code = app.exec()
     db.close()
     return code
 

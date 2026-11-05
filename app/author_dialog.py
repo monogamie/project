@@ -1,9 +1,9 @@
 """Формы справочников: авторы и жанры."""
 import sqlite3
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QAbstractItemView, QDialog, QDialogButtonBox,
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (QAbstractItemView, QDialog, QDialogButtonBox,
                              QFormLayout, QHBoxLayout, QHeaderView, QInputDialog,
                              QLineEdit, QListWidget, QListWidgetItem, QMessageBox,
                              QPushButton, QSpinBox, QTableWidget, QTableWidgetItem,
@@ -29,7 +29,7 @@ class AuthorEditDialog(QDialog):
         form.addRow("ФИО*:", self.name_edit)
         form.addRow("Страна:", self.country_edit)
         form.addRow("Год рождения:", self.year_spin)
-        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         buttons.accepted.connect(self._check)
         buttons.rejected.connect(self.reject)
         form.addRow(buttons)
@@ -58,8 +58,8 @@ class AuthorsDialog(QDialog):
 
         self.table = QTableWidget(0, 4)
         self.table.setHorizontalHeaderLabels(["ФИО", "Страна", "Год рождения", "Книг"])
-        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setAlternatingRowColors(True)
         self.table.itemChanged.connect(self.item_changed)
 
@@ -89,10 +89,10 @@ class AuthorsDialog(QDialog):
             values = [a["name"], a["country"] or "", str(a["birth_year"] or ""), str(a["cnt"])]
             for c, value in enumerate(values):
                 item = QTableWidgetItem(value)
-                item.setData(Qt.UserRole, a["id"])
+                item.setData(Qt.ItemDataRole.UserRole, a["id"])
                 if c == 3:
-                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                    item.setTextAlignment(Qt.AlignCenter)
+                    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.table.setItem(r, c, item)
         self.loading = False
 
@@ -101,7 +101,7 @@ class AuthorsDialog(QDialog):
         if self.loading:
             return
         row = item.row()
-        author_id = item.data(Qt.UserRole)
+        author_id = item.data(Qt.ItemDataRole.UserRole)
         name = self.table.item(row, 0).text().strip()
         country = self.table.item(row, 1).text().strip()
         year_text = self.table.item(row, 2).text().strip()
@@ -118,7 +118,7 @@ class AuthorsDialog(QDialog):
 
     def add(self):
         dlg = AuthorEditDialog(parent=self)
-        if dlg.exec_() == QDialog.Accepted:
+        if dlg.exec() == QDialog.DialogCode.Accepted:
             try:
                 self.db.add_author(*dlg.values())
             except sqlite3.IntegrityError:
@@ -134,8 +134,8 @@ class AuthorsDialog(QDialog):
         answer = QMessageBox.question(
             self, "Удаление автора",
             f"Удалить автора «{name}»?\nУ {count} книг(и) автор станет «не указан».")
-        if answer == QMessageBox.Yes:
-            self.db.delete_author(self.table.item(row, 0).data(Qt.UserRole))
+        if answer == QMessageBox.StandardButton.Yes:
+            self.db.delete_author(self.table.item(row, 0).data(Qt.ItemDataRole.UserRole))
             self.load()
 
 
@@ -176,8 +176,8 @@ class GenresDialog(QDialog):
         self.list.clear()
         for g in self.db.genres():
             item = QListWidgetItem(QIcon(icon("genres")), f"{g['name']}  ({g['cnt']})")
-            item.setData(Qt.UserRole, g["id"])
-            item.setData(Qt.UserRole + 1, g["name"])
+            item.setData(Qt.ItemDataRole.UserRole, g["id"])
+            item.setData(Qt.ItemDataRole.UserRole + 1, g["name"])
             self.list.addItem(item)
 
     def add(self):
@@ -194,10 +194,10 @@ class GenresDialog(QDialog):
         if not item:
             return
         name, ok = QInputDialog.getText(self, "Переименовать жанр", "Новое название:",
-                                        text=item.data(Qt.UserRole + 1))
+                                        text=item.data(Qt.ItemDataRole.UserRole + 1))
         if ok and name.strip():
             try:
-                self.db.rename_genre(item.data(Qt.UserRole), name.strip())
+                self.db.rename_genre(item.data(Qt.ItemDataRole.UserRole), name.strip())
             except sqlite3.IntegrityError:
                 QMessageBox.warning(self, "Ошибка", "Такой жанр уже есть.")
             self.load()
@@ -207,6 +207,6 @@ class GenresDialog(QDialog):
         if not item:
             return
         if QMessageBox.question(self, "Удаление",
-                                f"Удалить жанр «{item.data(Qt.UserRole + 1)}»?") == QMessageBox.Yes:
-            self.db.delete_genre(item.data(Qt.UserRole))
+                                f"Удалить жанр «{item.data(Qt.ItemDataRole.UserRole + 1)}»?") == QMessageBox.StandardButton.Yes:
+            self.db.delete_genre(item.data(Qt.ItemDataRole.UserRole))
             self.load()

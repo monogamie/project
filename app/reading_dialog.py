@@ -1,7 +1,7 @@
 """Форма «Журнал чтения» для выбранной книги."""
-from PyQt5.QtCore import QDate, Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QAbstractItemView, QDateEdit, QDial, QDialog,
+from PyQt6.QtCore import QDate, Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (QAbstractItemView, QDateEdit, QDial, QDialog,
                              QGroupBox, QHBoxLayout, QHeaderView, QLabel,
                              QMessageBox, QProgressBar, QPushButton, QSpinBox,
                              QTableWidget, QTableWidgetItem, QVBoxLayout)
@@ -68,9 +68,9 @@ class ReadingDialog(QDialog):
         # ----- история
         self.table = QTableWidget(0, 2)
         self.table.setHorizontalHeaderLabels(["Дата", "Страниц"])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.verticalHeader().hide()
         del_btn = QPushButton(QIcon(icon("delete")), "Удалить запись")
         del_btn.clicked.connect(self.delete_record)
@@ -92,11 +92,11 @@ class ReadingDialog(QDialog):
         rows = self.db.readings(book_id=self.book_id)
         self.table.setRowCount(len(rows))
         for r, rec in enumerate(rows):
-            date_item = QTableWidgetItem(QDate.fromString(rec["date"], Qt.ISODate)
+            date_item = QTableWidgetItem(QDate.fromString(rec["date"], Qt.DateFormat.ISODate)
                                          .toString("dd.MM.yyyy"))
-            date_item.setData(Qt.UserRole, rec["id"])
+            date_item.setData(Qt.ItemDataRole.UserRole, rec["id"])
             pages_item = QTableWidgetItem(str(rec["pages"]))
-            pages_item.setTextAlignment(Qt.AlignCenter)
+            pages_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.table.setItem(r, 0, date_item)
             self.table.setItem(r, 1, pages_item)
         read = sum(rec["pages"] for rec in rows)
@@ -106,7 +106,7 @@ class ReadingDialog(QDialog):
         return read
 
     def add_record(self):
-        self.db.add_reading(self.book_id, self.date_edit.date().toString(Qt.ISODate),
+        self.db.add_reading(self.book_id, self.date_edit.date().toString(Qt.DateFormat.ISODate),
                             self.pages_spin.value())
         read = self.load()
         book = self.db.book(self.book_id)
@@ -116,13 +116,13 @@ class ReadingDialog(QDialog):
             answer = QMessageBox.question(
                 self, "Книга прочитана?",
                 "Вы прочитали все страницы. Отметить книгу как «Прочитано»?")
-            if answer == QMessageBox.Yes:
+            if answer == QMessageBox.StandardButton.Yes:
                 self.db.set_status(self.book_id, "Прочитано")
 
     def delete_record(self):
         row = self.table.currentRow()
         if row < 0:
             return
-        if QMessageBox.question(self, "Удаление", "Удалить выбранную запись?") == QMessageBox.Yes:
-            self.db.delete_reading(self.table.item(row, 0).data(Qt.UserRole))
+        if QMessageBox.question(self, "Удаление", "Удалить выбранную запись?") == QMessageBox.StandardButton.Yes:
+            self.db.delete_reading(self.table.item(row, 0).data(Qt.ItemDataRole.UserRole))
             self.load()

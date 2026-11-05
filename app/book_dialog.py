@@ -3,9 +3,9 @@ import os
 import shutil
 import uuid
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox,
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox,
                              QFileDialog, QFormLayout, QHBoxLayout, QInputDialog,
                              QLabel, QLineEdit, QMessageBox, QPlainTextEdit,
                              QPushButton, QSlider, QSpinBox, QToolButton,
@@ -64,9 +64,9 @@ class BookDialog(QDialog):
         self.pages_spin.setRange(0, 10000)
         self.pages_spin.setSuffix(" стр.")
 
-        self.rating_slider = QSlider(Qt.Horizontal)
+        self.rating_slider = QSlider(Qt.Orientation.Horizontal)
         self.rating_slider.setRange(0, 5)
-        self.rating_slider.setTickPosition(QSlider.TicksBelow)
+        self.rating_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         self.rating_slider.setTickInterval(1)
         self.rating_label = QLabel()
         self.rating_slider.valueChanged.connect(self._rating_changed)
@@ -109,9 +109,9 @@ class BookDialog(QDialog):
         top.addLayout(cover_box)
         top.addLayout(form, 1)
 
-        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
-        buttons.button(QDialogButtonBox.Save).setText("Сохранить")
-        buttons.button(QDialogButtonBox.Cancel).setText("Отмена")
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
+        buttons.button(QDialogButtonBox.StandardButton.Save).setText("Сохранить")
+        buttons.button(QDialogButtonBox.StandardButton.Cancel).setText("Отмена")
         buttons.accepted.connect(self.save)
         buttons.rejected.connect(self.reject)
 
@@ -159,7 +159,7 @@ class BookDialog(QDialog):
     # ------------------------------------------------------------- действия
     def add_author(self):
         dlg = AuthorEditDialog(parent=self)
-        if dlg.exec_() == QDialog.Accepted:
+        if dlg.exec() == QDialog.DialogCode.Accepted:
             name, country, year = dlg.values()
             try:
                 new_id = self.db.add_author(name, country, year)

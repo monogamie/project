@@ -6,8 +6,8 @@
 import os
 import sys
 
-from PyQt5.QtCore import QPointF, QRectF, Qt
-from PyQt5.QtGui import (QBrush, QColor, QFont, QGuiApplication, QImage,
+from PyQt6.QtCore import QPointF, QRectF, Qt
+from PyQt6.QtGui import (QBrush, QColor, QFont, QGuiApplication, QImage,
                          QLinearGradient, QPainter, QPainterPath, QPen, QPolygonF)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,18 +20,18 @@ DARK = QColor("#2b2d42")
 
 
 def canvas(w, h):
-    img = QImage(w, h, QImage.Format_ARGB32)
-    img.fill(Qt.transparent)
+    img = QImage(w, h, QImage.Format.Format_ARGB32)
+    img.fill(Qt.GlobalColor.transparent)
     p = QPainter(img)
-    p.setRenderHint(QPainter.Antialiasing)
-    p.setRenderHint(QPainter.TextAntialiasing)
+    p.setRenderHint(QPainter.RenderHint.Antialiasing)
+    p.setRenderHint(QPainter.RenderHint.TextAntialiasing)
     return img, p
 
 
 def draw_book(p, rect, color):
     """Закрытая книга: обложка + страницы."""
     x, y, w, h = rect
-    p.setPen(Qt.NoPen)
+    p.setPen(Qt.PenStyle.NoPen)
     p.setBrush(QColor("#f4efe2"))
     p.drawRoundedRect(QRectF(x + w * 0.08, y + h * 0.04, w * 0.9, h * 0.94), 4, 4)
     p.setBrush(color)
@@ -48,7 +48,7 @@ def logo():
     grad = QLinearGradient(0, 0, 256, 256)
     grad.setColorAt(0, ACCENT.lighter(120))
     grad.setColorAt(1, ACCENT.darker(130))
-    p.setPen(Qt.NoPen)
+    p.setPen(Qt.PenStyle.NoPen)
     p.setBrush(QBrush(grad))
     p.drawRoundedRect(QRectF(8, 8, 240, 240), 48, 48)
     # три книги на полке
@@ -76,8 +76,8 @@ def no_cover():
     p.drawRoundedRect(QRectF(2, 2, 196, 296), 10, 10)
     draw_book(p, (65, 80, 70, 100), QColor("#8a94a6"))
     p.setPen(QColor("#4a5468"))
-    p.setFont(QFont("DejaVu Sans", 13, QFont.Bold))
-    p.drawText(QRectF(0, 200, 200, 60), Qt.AlignCenter, "Нет обложки")
+    p.setFont(QFont("DejaVu Sans", 13, QFont.Weight.Bold))
+    p.drawText(QRectF(0, 200, 200, 60), Qt.AlignmentFlag.AlignCenter, "Нет обложки")
     p.end()
     img.save(os.path.join(IMAGES, "no_cover.png"))
 
@@ -87,16 +87,16 @@ def splash(logo_img):
     grad = QLinearGradient(0, 0, 520, 300)
     grad.setColorAt(0, DARK)
     grad.setColorAt(1, ACCENT.darker(150))
-    p.setPen(Qt.NoPen)
+    p.setPen(Qt.PenStyle.NoPen)
     p.setBrush(QBrush(grad))
     p.drawRoundedRect(QRectF(0, 0, 520, 300), 18, 18)
     p.drawImage(QRectF(30, 60, 170, 170), logo_img)
-    p.setPen(Qt.white)
-    p.setFont(QFont("DejaVu Sans", 26, QFont.Bold))
-    p.drawText(QRectF(215, 80, 290, 90), Qt.AlignLeft | Qt.TextWordWrap, "Домашняя\nбиблиотека")
+    p.setPen(Qt.GlobalColor.white)
+    p.setFont(QFont("DejaVu Sans", 26, QFont.Weight.Bold))
+    p.drawText(QRectF(215, 80, 290, 90), Qt.AlignmentFlag.AlignLeft | Qt.TextFlag.TextWordWrap, "Домашняя\nбиблиотека")
     p.setFont(QFont("DejaVu Sans", 12))
     p.setPen(QColor("#cfd6e6"))
-    p.drawText(QRectF(215, 185, 290, 60), Qt.AlignLeft | Qt.TextWordWrap,
+    p.drawText(QRectF(215, 185, 290, 60), Qt.AlignmentFlag.AlignLeft | Qt.TextFlag.TextWordWrap,
                "Учёт книг, авторов\nи прочитанных страниц")
     p.end()
     img.save(os.path.join(IMAGES, "splash.png"))
@@ -111,17 +111,17 @@ def icon(name, draw):
 
 
 def circle(p, color):
-    p.setPen(Qt.NoPen)
+    p.setPen(Qt.PenStyle.NoPen)
     p.setBrush(color)
     p.drawEllipse(QRectF(3, 3, 42, 42))
 
 
 def white_pen(p, width=5):
-    pen = QPen(Qt.white, width)
-    pen.setCapStyle(Qt.RoundCap)
-    pen.setJoinStyle(Qt.RoundJoin)
+    pen = QPen(Qt.GlobalColor.white, width)
+    pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+    pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
     p.setPen(pen)
-    p.setBrush(Qt.NoBrush)
+    p.setBrush(Qt.BrushStyle.NoBrush)
 
 
 def ic_add(p):
@@ -135,7 +135,7 @@ def ic_edit(p):
     circle(p, ACCENT)
     white_pen(p, 4)
     p.drawLine(15, 33, 31, 17)
-    p.setBrush(Qt.white)
+    p.setBrush(Qt.GlobalColor.white)
     p.drawPolygon(QPolygonF([QPointF(12, 36), QPointF(14, 29), QPointF(19, 34)]))
 
 
@@ -195,7 +195,7 @@ def ic_read(p):
 
 
 def ic_authors(p):
-    p.setPen(Qt.NoPen)
+    p.setPen(Qt.PenStyle.NoPen)
     p.setBrush(ACCENT)
     p.drawEllipse(QRectF(16, 6, 16, 16))
     path = QPainterPath()
@@ -206,7 +206,7 @@ def ic_authors(p):
 def ic_genres(p):
     colors = [WARM, QColor("#f2c14e"), QColor("#7bc67b"), ACCENT]
     for i, c in enumerate(colors):
-        p.setPen(Qt.NoPen)
+        p.setPen(Qt.PenStyle.NoPen)
         p.setBrush(c)
         p.drawRoundedRect(QRectF(6 + i * 9, 8 + (i % 2) * 4, 8, 34 - (i % 2) * 4), 2, 2)
     p.setBrush(DARK)
@@ -214,7 +214,7 @@ def ic_genres(p):
 
 
 def ic_stats(p):
-    p.setPen(Qt.NoPen)
+    p.setPen(Qt.PenStyle.NoPen)
     for i, (h, c) in enumerate([(14, WARM), (26, QColor("#f2c14e")), (36, ACCENT)]):
         p.setBrush(c)
         p.drawRoundedRect(QRectF(8 + i * 12, 42 - h, 9, h), 2, 2)
@@ -224,17 +224,17 @@ def ic_stats(p):
 
 def ic_about(p):
     circle(p, ACCENT)
-    p.setPen(Qt.white)
-    p.setFont(QFont("DejaVu Serif", 24, QFont.Bold))
-    p.drawText(QRectF(3, 3, 42, 42), Qt.AlignCenter, "i")
+    p.setPen(Qt.GlobalColor.white)
+    p.setFont(QFont("DejaVu Serif", 24, QFont.Weight.Bold))
+    p.drawText(QRectF(3, 3, 42, 42), Qt.AlignmentFlag.AlignCenter, "i")
 
 
 def ic_exit(p):
     p.setPen(QPen(DARK, 3))
-    p.setBrush(Qt.NoBrush)
+    p.setBrush(Qt.BrushStyle.NoBrush)
     p.drawPolyline(QPolygonF([QPointF(26, 8), QPointF(10, 8), QPointF(10, 40), QPointF(26, 40)]))
     pen = QPen(QColor("#cc4b4b"), 4)
-    pen.setCapStyle(Qt.RoundCap)
+    pen.setCapStyle(Qt.PenCapStyle.RoundCap)
     p.setPen(pen)
     p.drawLine(20, 24, 40, 24)
     p.drawPolyline(QPolygonF([QPointF(33, 17), QPointF(40, 24), QPointF(33, 31)]))
@@ -242,14 +242,14 @@ def ic_exit(p):
 
 def ic_font(p):
     p.setPen(DARK)
-    p.setFont(QFont("DejaVu Serif", 28, QFont.Bold))
-    p.drawText(QRectF(0, 0, 48, 48), Qt.AlignCenter, "Aa")
+    p.setFont(QFont("DejaVu Serif", 28, QFont.Weight.Bold))
+    p.drawText(QRectF(0, 0, 48, 48), Qt.AlignmentFlag.AlignCenter, "Aa")
 
 
 def ic_color(p):
     for i, c in enumerate([QColor("#cc4b4b"), QColor("#3a9d5d"), ACCENT]):
         c.setAlpha(200)
-        p.setPen(Qt.NoPen)
+        p.setPen(Qt.PenStyle.NoPen)
         p.setBrush(c)
         x, y = [(8, 6), (20, 6), (14, 18)][i]
         p.drawEllipse(QRectF(x, y, 22, 22))

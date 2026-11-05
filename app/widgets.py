@@ -1,9 +1,9 @@
 """Вспомогательные (дополнительные) виджеты."""
 import os
 
-from PyQt5.QtCore import QRectF, Qt
-from PyQt5.QtGui import QColor, QFont, QPainter, QPixmap
-from PyQt5.QtWidgets import QLabel, QSizePolicy, QWidget
+from PyQt6.QtCore import QRectF, Qt
+from PyQt6.QtGui import QColor, QFont, QPainter, QPixmap
+from PyQt6.QtWidgets import QLabel, QSizePolicy, QWidget
 
 from .paths import COVERS_DIR, image
 
@@ -16,7 +16,7 @@ def cover_pixmap(cover, width=150, height=225):
     pix = QPixmap(path) if path and os.path.exists(path) else QPixmap()
     if pix.isNull():
         pix = QPixmap(image("no_cover.png"))
-    return pix.scaled(width, height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+    return pix.scaled(width, height, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
 
 
 class CoverLabel(QLabel):
@@ -26,7 +26,7 @@ class CoverLabel(QLabel):
         super().__init__(parent)
         self.w, self.h = width, height
         self.setFixedSize(width + 4, height + 4)
-        self.setAlignment(Qt.AlignCenter)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.set_cover("")
 
     def set_cover(self, cover):
@@ -47,11 +47,11 @@ class StarRating(QWidget):
 
     def paintEvent(self, event):
         p = QPainter(self)
-        p.setRenderHint(QPainter.Antialiasing)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
         p.setFont(QFont(self.font().family(), 16))
         for i in range(5):
             p.setPen(QColor("#f2a900") if i < self.value else QColor("#c8c8c8"))
-            p.drawText(QRectF(i * 26, 0, 26, 26), Qt.AlignCenter, "★")
+            p.drawText(QRectF(i * 26, 0, 26, 26), Qt.AlignmentFlag.AlignCenter, "★")
 
 
 class BarChart(QWidget):
@@ -63,7 +63,7 @@ class BarChart(QWidget):
         self.items = []
         self.color = QColor("#3f6fb5")
         self.setMinimumHeight(220)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
     def set_data(self, items):
         """items — список пар (подпись, значение)."""
@@ -76,17 +76,17 @@ class BarChart(QWidget):
 
     def paintEvent(self, event):
         p = QPainter(self)
-        p.setRenderHint(QPainter.Antialiasing)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
         w, h = self.width(), self.height()
         p.fillRect(self.rect(), self.palette().base())
         p.setPen(self.palette().text().color())
         bold = QFont(self.font())
         bold.setBold(True)
         p.setFont(bold)
-        p.drawText(QRectF(0, 4, w, 20), Qt.AlignCenter, self.title)
+        p.drawText(QRectF(0, 4, w, 20), Qt.AlignmentFlag.AlignCenter, self.title)
         p.setFont(self.font())
         if not self.items or max(v for _, v in self.items) == 0:
-            p.drawText(self.rect(), Qt.AlignCenter, "Нет данных")
+            p.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, "Нет данных")
             return
         top, bottom, left = 46, 40, 10
         area_h = h - top - bottom
@@ -99,12 +99,12 @@ class BarChart(QWidget):
             bar_h = area_h * value / maximum
             x = left + i * step + (step - bar_w) / 2
             y = top + area_h - bar_h
-            p.setPen(Qt.NoPen)
+            p.setPen(Qt.PenStyle.NoPen)
             p.setBrush(self.color.lighter(100 + (i % 3) * 15))
             p.drawRoundedRect(QRectF(x, y, bar_w, bar_h), 3, 3)
             p.setPen(self.palette().text().color())
             p.setFont(small)
-            p.drawText(QRectF(x - 10, y - 16, bar_w + 20, 16), Qt.AlignCenter, str(value))
-            text = p.fontMetrics().elidedText(label, Qt.ElideRight, int(step) - 2)
+            p.drawText(QRectF(x - 10, y - 16, bar_w + 20, 16), Qt.AlignmentFlag.AlignCenter, str(value))
+            text = p.fontMetrics().elidedText(label, Qt.TextElideMode.ElideRight, int(step) - 2)
             p.drawText(QRectF(left + i * step, h - bottom + 4, step, bottom - 4),
-                       Qt.AlignHCenter | Qt.AlignTop, text)
+                       Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop, text)

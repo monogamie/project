@@ -1,7 +1,7 @@
 """Вкладка «Статистика»."""
 import datetime
 
-from PyQt5.QtWidgets import (QFormLayout, QGridLayout, QGroupBox, QHBoxLayout,
+from PyQt6.QtWidgets import (QFormLayout, QGridLayout, QGroupBox, QHBoxLayout,
                              QLabel, QLCDNumber, QProgressBar, QSpinBox,
                              QVBoxLayout, QWidget)
 
@@ -66,7 +66,7 @@ class StatsWidget(QWidget):
     @staticmethod
     def _lcd(digits=4):
         lcd = QLCDNumber(digits)
-        lcd.setSegmentStyle(QLCDNumber.Flat)
+        lcd.setSegmentStyle(QLCDNumber.SegmentStyle.Flat)
         lcd.setMinimumHeight(48)
         return lcd
 

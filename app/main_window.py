@@ -3,9 +3,9 @@ import datetime
 import os
 import random
 
-from PyQt5.QtCore import QDate, Qt
-from PyQt5.QtGui import QColor, QIcon, QKeySequence, QTextCharFormat
-from PyQt5.QtWidgets import (QAbstractItemView, QAction, QButtonGroup,
+from PyQt6.QtCore import QDate, Qt
+from PyQt6.QtGui import QAction, QColor, QFont, QIcon, QKeySequence, QTextCharFormat
+from PyQt6.QtWidgets import (QAbstractItemView, QButtonGroup,
                              QCalendarWidget, QCheckBox, QColorDialog, QComboBox,
                              QFileDialog, QFontDialog, QGroupBox, QHBoxLayout,
                              QHeaderView, QLabel, QLineEdit, QListWidget,
@@ -33,7 +33,7 @@ class NumItem(QTableWidgetItem):
     def __init__(self, value, text=None):
         super().__init__(str(value) if text is None else text)
         self.value = value
-        self.setTextAlignment(Qt.AlignCenter)
+        self.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def __lt__(self, other):
         if isinstance(other, NumItem):
@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
     def _create_toolbar(self):
         tb = self.addToolBar("Основная панель")
         tb.setMovable(False)
-        tb.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        tb.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
         tb.addActions([self.act_add, self.act_edit, self.act_delete, self.act_read])
         tb.addSeparator()
         tb.addActions([self.act_authors, self.act_genres])
@@ -177,7 +177,7 @@ class MainWindow(QMainWindow):
         self.preview_notes = QTextBrowser()
         read_btn = QPushButton(QIcon(icon("read")), "Журнал чтения")
         read_btn.clicked.connect(self.open_readings)
-        layout.addWidget(self.preview_cover, 0, Qt.AlignHCenter)
+        layout.addWidget(self.preview_cover, 0, Qt.AlignmentFlag.AlignHCenter)
         layout.addWidget(self.preview_title)
         layout.addWidget(self.preview_stars)
         layout.addWidget(self.preview_progress)
@@ -205,22 +205,22 @@ class MainWindow(QMainWindow):
     def _create_central(self):
         self.table = QTableWidget(0, len(COLUMNS))
         self.table.setHorizontalHeaderLabels(COLUMNS)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.setAlternatingRowColors(True)
         self.table.setSortingEnabled(True)
         self.table.verticalHeader().hide()
         header = self.table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.Interactive)
-        header.setSectionResizeMode(2, QHeaderView.Interactive)
+        header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.Interactive)
         header.setStretchLastSection(True)
-        self.table.setColumnWidth(1, 230)
-        self.table.setColumnWidth(2, 190)
+        self.table.setColumnWidth(1, 220)
+        self.table.setColumnWidth(2, 165)
         self.table.itemSelectionChanged.connect(self.update_preview)
         self.table.itemDoubleClicked.connect(lambda _: self.edit_book())
-        self.table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.table.customContextMenuRequested.connect(self.context_menu)
         font = self.db.setting("table_font")
         if font:
@@ -287,7 +287,7 @@ class MainWindow(QMainWindow):
             fav = NumItem(b["favorite"], "★" if b["favorite"] else "")
             fav.setForeground(QColor("#f2a900"))
             title = QTableWidgetItem(b["title"])
-            title.setData(Qt.UserRole, b["id"])
+            title.setData(Qt.ItemDataRole.UserRole, b["id"])
             status = QTableWidgetItem(b["status"])
             status.setForeground(QColor(STATUS_COLORS.get(b["status"], "#000")))
             items = [fav, title, QTableWidgetItem(b["author"]), QTableWidgetItem(b["genre"]),
@@ -305,14 +305,14 @@ class MainWindow(QMainWindow):
         self.calendar.setDateTextFormat(QDate(), QTextCharFormat())
         fmt = QTextCharFormat()
         fmt.setBackground(self.accent.lighter(170))
-        fmt.setFontWeight(75)
+        fmt.setFontWeight(QFont.Weight.Bold)
         for d in self.db.reading_dates():
-            self.calendar.setDateTextFormat(QDate.fromString(d, Qt.ISODate), fmt)
+            self.calendar.setDateTextFormat(QDate.fromString(d, Qt.DateFormat.ISODate), fmt)
         self.refresh_day()
 
     def refresh_day(self):
         date = self.calendar.selectedDate()
-        rows = self.db.readings(date=date.toString(Qt.ISODate))
+        rows = self.db.readings(date=date.toString(Qt.DateFormat.ISODate))
         self.day_list.clear()
         for r in rows:
             self.day_list.addItem(f"{r['title']} — {r['pages']} стр.")
@@ -323,13 +323,13 @@ class MainWindow(QMainWindow):
         row = self.table.currentRow()
         if row < 0 or not self.table.selectedItems():
             return None
-        return self.table.item(row, 1).data(Qt.UserRole)
+        return self.table.item(row, 1).data(Qt.ItemDataRole.UserRole)
 
     def select_id(self, book_id):
         if book_id is None:
             return
         for row in range(self.table.rowCount()):
-            if self.table.item(row, 1).data(Qt.UserRole) == book_id:
+            if self.table.item(row, 1).data(Qt.ItemDataRole.UserRole) == book_id:
                 self.table.selectRow(row)
                 return
 
@@ -363,13 +363,13 @@ class MainWindow(QMainWindow):
 
     def add_book(self):
         dlg = BookDialog(self.db, parent=self)
-        if dlg.exec_():
+        if dlg.exec():
             self.refresh_all()
             self.select_id(dlg.book_id)
 
     def edit_book(self):
         book_id = self.need_book()
-        if book_id and BookDialog(self.db, book_id, self).exec_():
+        if book_id and BookDialog(self.db, book_id, self).exec():
             self.refresh_all()
 
     def delete_book(self):
@@ -380,15 +380,15 @@ class MainWindow(QMainWindow):
         answer = QMessageBox.question(
             self, "Удаление книги",
             f"Удалить книгу «{title}» вместе с журналом чтения?",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if answer == QMessageBox.Yes:
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if answer == QMessageBox.StandardButton.Yes:
             self.db.delete_book(book_id)
             self.refresh_all()
 
     def open_readings(self):
         book_id = self.need_book()
         if book_id:
-            ReadingDialog(self.db, book_id, self).exec_()
+            ReadingDialog(self.db, book_id, self).exec()
             self.refresh_all()
 
     def toggle_favorite(self):
@@ -413,14 +413,14 @@ class MainWindow(QMainWindow):
             status_menu.addAction(s, lambda s=s: self.set_status(s))
         menu.addSeparator()
         menu.addAction(self.act_delete)
-        menu.exec_(self.table.viewport().mapToGlobal(pos))
+        menu.exec(self.table.viewport().mapToGlobal(pos))
 
     def open_authors(self):
-        AuthorsDialog(self.db, self).exec_()
+        AuthorsDialog(self.db, self).exec()
         self.refresh_all()
 
     def open_genres(self):
-        GenresDialog(self.db, self).exec_()
+        GenresDialog(self.db, self).exec()
         self.refresh_all()
 
     def reset_filters(self):
@@ -510,12 +510,12 @@ class MainWindow(QMainWindow):
         self.stats.set_color(self.accent)
 
     def about(self):
-        AboutDialog(self).exec_()
+        AboutDialog(self).exec()
 
     def closeEvent(self, event):
         answer = QMessageBox.question(self, "Выход", "Закрыть программу?",
-                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if answer == QMessageBox.Yes:
+                                      QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
+        if answer == QMessageBox.StandardButton.Yes:
             event.accept()
         else:
             event.ignore()
