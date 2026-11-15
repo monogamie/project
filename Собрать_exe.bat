@@ -1,15 +1,15 @@
 @echo off
 chcp 65001 >nul
-REM Сборка единого исполняемого файла LibraryApp.exe (Windows)
-REM Перед запуском:  pip install -r requirements.txt
+REM Сборка программы в один файл LibraryApp.exe (урок QT 8)
+REM Перед запуском один раз выполните: pip install -r requirements.txt
 
-pyinstaller --noconfirm --clean --onefile --windowed ^
-  --name LibraryApp ^
-  --icon images\app.ico ^
+pyinstaller --onefile --noconsole --icon=images\app.ico --name=LibraryApp ^
+  --add-data "ui;ui" ^
   --add-data "images;images" ^
   --add-data "data;data" ^
+  --add-data "style.qss;." ^
   main.py
 
 echo.
-echo Готово! Файл: dist\LibraryApp.exe
+echo Готово! Программа лежит в папке dist: dist\LibraryApp.exe
 pause

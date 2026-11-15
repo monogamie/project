@@ -1,0 +1,46 @@
+/* Стили оформления программы (урок QT 4).
+   Файл читается при запуске и применяется ко всему главному окну. */
+
+QMainWindow {
+    background-color: #f7f4ec;
+}
+
+QTabWidget::pane {
+    border: 1px solid #c9d3e6;
+}
+
+QGroupBox {
+    font-weight: bold;
+}
+
+QHeaderView::section {
+    background-color: #3f6fb5;
+    color: white;
+    font-weight: bold;
+    padding: 4px;
+    border: none;
+}
+
+QPushButton {
+    background-color: #3f6fb5;
+    color: white;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #2f5a96;
+}
+
+QProgressBar {
+    border: 1px solid #c9d3e6;
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    background-color: #3a9d5d;
+}
+
+QTextBrowser {
+    background-color: white;
+}

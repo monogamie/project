@@ -3,8 +3,7 @@ __pycache__/
 build/
 dist/
 *.spec
-library.db
-covers/
+library.sqlite
 venv/
 .venv/
 *.zip
