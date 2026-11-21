@@ -5,9 +5,9 @@ import random
 from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QPixmap
-from PyQt6.QtWidgets import (QColorDialog, QFileDialog, QFontDialog,
-                             QHeaderView, QMainWindow, QMessageBox,
-                             QTableWidgetItem)
+from PyQt6.QtWidgets import (QApplication, QColorDialog, QFileDialog,
+                             QFontDialog, QHeaderView, QMainWindow,
+                             QMessageBox, QTableWidgetItem)
 
 from book_form import BookForm
 from chart_widget import ChartWidget
@@ -73,9 +73,9 @@ class MainWindow(QMainWindow):
         return datetime.date.today().isoformat()
 
     def load_style(self):
-        """Читает стили оформления из файла style.qss (урок QT 4)."""
+        """Стили из файла style.qss для всех окон программы (урок QT 4)."""
         with open(resource_path("style.qss"), encoding="utf-8") as f:
-            self.setStyleSheet(f.read())
+            QApplication.instance().setStyleSheet(f.read())
 
     def show_quote(self):
         """Случайная цитата дня из текстового файла quotes.txt."""

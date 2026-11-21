@@ -1,18 +1,40 @@
 /* Стили оформления программы (урок QT 4).
-   Файл читается при запуске и применяется ко всему главному окну. */
+   Файл читается при запуске и применяется ко всем окнам.
+   Цвета заданы явно, чтобы программа одинаково выглядела
+   и в светлой, и в тёмной теме Windows. */
 
-QMainWindow {
+/* Цвет текста и фон всех окон */
+QWidget {
+    color: #1f2a44;
     background-color: #f7f4ec;
 }
 
-QTabWidget::pane {
+/* Поля ввода, списки, таблицы: белый фон */
+QLineEdit, QComboBox, QSpinBox, QDateEdit, QTextEdit, QTextBrowser,
+QTableWidget, QLCDNumber {
+    background-color: white;
+    color: #1f2a44;
     border: 1px solid #c9d3e6;
+    border-radius: 3px;
 }
 
-QGroupBox {
-    font-weight: bold;
+/* Выпадающий список у QComboBox */
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: #1f2a44;
+    selection-background-color: #3f6fb5;
+    selection-color: white;
 }
 
+/* Таблицы: строки через одну другого цвета, выделение синим */
+QTableWidget {
+    alternate-background-color: #eef2f9;
+    gridline-color: #dce5f3;
+    selection-background-color: #3f6fb5;
+    selection-color: white;
+}
+
+/* Заголовки столбцов таблиц */
 QHeaderView::section {
     background-color: #3f6fb5;
     color: white;
@@ -21,6 +43,50 @@ QHeaderView::section {
     border: none;
 }
 
+/* Меню */
+QMenuBar, QMenu {
+    background-color: #ece6d8;
+    color: #1f2a44;
+}
+
+QMenuBar::item:selected, QMenu::item:selected {
+    background-color: #3f6fb5;
+    color: white;
+}
+
+/* Вкладки */
+QTabBar::tab {
+    background-color: #ece6d8;
+    color: #1f2a44;
+    padding: 5px 12px;
+}
+
+QTabBar::tab:selected {
+    background-color: #3f6fb5;
+    color: white;
+}
+
+QGroupBox {
+    font-weight: bold;
+}
+
+/* Флажки и переключатели: светлый квадратик или кружок */
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    background-color: white;
+    border: 1px solid #3f6fb5;
+}
+
+QRadioButton::indicator {
+    border-radius: 7px;
+}
+
+QCheckBox::indicator:checked, QRadioButton::indicator:checked {
+    background-color: #3f6fb5;
+}
+
+/* Кнопки */
 QPushButton {
     background-color: #3f6fb5;
     color: white;
@@ -32,15 +98,14 @@ QPushButton:hover {
     background-color: #2f5a96;
 }
 
+/* Полосы прогресса */
 QProgressBar {
+    background-color: white;
+    color: #1f2a44;
     border: 1px solid #c9d3e6;
     text-align: center;
 }
 
 QProgressBar::chunk {
     background-color: #3a9d5d;
-}
-
-QTextBrowser {
-    background-color: white;
 }
