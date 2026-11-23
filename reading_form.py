@@ -24,7 +24,7 @@ class ReadingForm(QWidget):
         self.total_pages = book["pages"] or 0
         self.setWindowTitle(f"Журнал чтения: {book['title']}")
         self.titleLabel.setText(f"<b>{book['title']}</b><br>"
-                                f"Всего страниц: {self.total_pages}")
+                                f"Страниц: {self.total_pages or 'не указано'}")
 
         # Нельзя выбрать дату из будущего
         self.dateEdit.setDate(QDate.currentDate())
@@ -49,9 +49,9 @@ class ReadingForm(QWidget):
                 i, 2, QTableWidgetItem(str(row["pages"])))
             read += row["pages"]
 
-        # Шкала прогресса: прочитано из общего числа страниц
-        self.progressBar.setMaximum(max(self.total_pages, read, 1))
-        self.progressBar.setValue(read)
+        # Шкала: прочитано из всех страниц; если их число не указано, 0%
+        self.progressBar.setMaximum(max(self.total_pages, 1))
+        self.progressBar.setValue(min(read, self.total_pages))
         return read
 
     def add_record(self):
