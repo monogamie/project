@@ -358,8 +358,8 @@ class LibraryDB:
     # --------------------------------------------------------------- CSV
     def import_csv(self, path, added):
         """Добавляет книги из CSV-файла. Возвращает число добавленных книг."""
-        with open(path, newline="", encoding="utf-8") as f:
-            rows = list(csv.reader(f))
+        with open(path, newline="", encoding="utf-8-sig") as f:
+            rows = list(csv.reader(f, delimiter=";"))
 
         count = 0
         # Первая строка файла: заголовки, её пропускаем
@@ -381,8 +381,8 @@ class LibraryDB:
 
     def export_csv(self, path, books):
         """Записывает книги в CSV-файл. Возвращает число записанных книг."""
-        with open(path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
+        with open(path, "w", newline="", encoding="utf-8-sig") as f:
+            writer = csv.writer(f, delimiter=";")
             writer.writerow(CSV_HEADER)
             for book in books:
                 writer.writerow([book["title"], book["author"] or "",

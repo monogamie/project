@@ -17,8 +17,8 @@ def resource_path(relative_path):
         # Программа запущена из exe: файлы лежат во временной папке
         base_path = sys._MEIPASS
     else:
-        # Обычный запуск: файлы лежат в текущей папке
-        base_path = os.path.abspath(".")
+        # Обычный запуск: файлы лежат в папке с этим файлом
+        base_path = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base_path, relative_path)
 
 
